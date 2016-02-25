@@ -27,7 +27,8 @@ class CsPrinter:
 			team2 = match['team2']
 			row = [team1, bets, team2]
 			rows.append(row)
-		self.print_table(header, rows)
+		alignments = ['>', '^', '<']
+		self.print_table(header, rows, alignments=alignments)
 
 	def print_upcoming_matches(self, upcoming_matches):
 		c = ansiColors()
@@ -40,7 +41,8 @@ class CsPrinter:
 			live_in = match['live_in']
 			row = [team1, bets, team2, live_in]
 			rows.append(row)
-		self.print_table(header, rows)
+		alignments = ['>', '^', '<', '^']
+		self.print_table(header, rows, alignments=alignments)
 
 	def print_recent_matches(self, recent_matches):
 		c = ansiColors()
@@ -66,9 +68,12 @@ class CsPrinter:
 				colors[i][0] = c.red
 				colors[i][2] = c.green
 
-		self.print_table(header, rows, colors)
+		# alignments
+		alignments = ['>', '^', '<', '^']
 
-	def print_table(self, header, rows, colors=None):
+		self.print_table(header, rows, alignments=alignments, colors=colors)
+
+	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None):
 		c = ansiColors()
 		# calculate columns width
 		header_widths = []
@@ -90,6 +95,13 @@ class CsPrinter:
 		if colors is None:
 			colors = [["" for y in range(len(header))] for x in range(len(rows))]
 
+		# check alignments, default is left
+		if alignments is None:
+			alignments = ["<" for x in range(len(header))]
+
+		# header alignments
+		header_alignments = alignments[:]
+
 		# add colors to rows
 		changed = [False] * len(header)
 		for i in range(len(rows)):
@@ -107,8 +119,8 @@ class CsPrinter:
 		bottom_border = u'\u255A' + u"\u2567".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u255D'
 
 		# rows text
-		header_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:<" + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2551'
-		row_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:<" + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2551'
+		header_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + header_alignments[i] + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2551'
+		row_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + alignments[i] + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2551'
 		rows_text = []
 		for row in rows:
 			rows_text.append(row_format.format(row))
