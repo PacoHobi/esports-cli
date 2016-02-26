@@ -23,7 +23,7 @@ class CsPrinter:
 		rows = []
 		for match in upcoming_matches:
 			team1 = match['team1']
-			bets = match['bet1'] + "% - " + match['bet2'] + "%"
+			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
 			row = [team1, bets, team2]
 			rows.append(row)
@@ -36,7 +36,7 @@ class CsPrinter:
 		rows = []
 		for match in upcoming_matches:
 			team1 = match['team1']
-			bets = match['bet1'] + "% - " + match['bet2'] + "%"
+			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
 			live_in = match['live_in']
 			row = [team1, bets, team2, live_in]
@@ -52,9 +52,10 @@ class CsPrinter:
 		rows = []
 		for match in recent_matches:
 			team1 = match['team1']
-			bets = match['bet1'] + "% - " + match['bet2'] + "%"
+			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
-			score = match['score1'] + " - " + match['score2']
+			score = "{:>2} - {}".format(match['score1'], match['score2'])
+			# score = match['score1'] + " - " + match['score2']
 			row = [team1, score, team2, bets]
 			rows.append(row)
 
@@ -73,7 +74,7 @@ class CsPrinter:
 
 		self.print_table(header, rows, alignments=alignments, colors=colors)
 
-	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None):
+	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True):
 		c = ansiColors()
 		# calculate columns width
 		header_widths = []
@@ -119,17 +120,18 @@ class CsPrinter:
 		bottom_border = u'\u2558' + u"\u2567".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u255B'
 
 		# rows text
-		header_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + header_alignments[i] + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2502'
 		row_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + alignments[i] + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2502'
 		rows_text = []
 		for row in rows:
 			rows_text.append(row_format.format(row))
-			rows_text.append(border)
+			if not compact:
+				rows_text.append(border)
 		# remove last row border
 		if len(rows_text) > 0:
 			rows_text.pop()
 		
 		# header text
+		header_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + header_alignments[i] + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2502'
 		header_text = header_format.format(header)
 
 		# print table
