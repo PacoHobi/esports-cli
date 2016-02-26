@@ -8,7 +8,7 @@ def main():
 	(live_matches, upcoming_matches, recent_matches) = parser.get_matches()
 
 	print("\nLive matches")
-	printer.print_live_matches(upcoming_matches)
+	printer.print_live_matches(live_matches)
 	print("\nUpcoming matches")
 	printer.print_upcoming_matches(upcoming_matches)
 	print("\nRecent matches")

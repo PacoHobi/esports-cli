@@ -21,14 +21,14 @@ class CsParser:
 		html_recent_matches = boxes[2]
 
 		# live matches
-		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_upcoming_matches)
+		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_live_matches)
 		live_matches = []
 		for row in rows:
 			m = re.search(r'<a href="(?P<url>.+?)"[\s\S]+?opp1">[^>]+>(?P<team1>.+?)<[\s\S]+?bet1">\((?P<bet1>\d+)[\s\S]+?bet2">\((?P<bet2>\d+)[\s\S]+?<span>(?P<team2>.+?)<', row)
 			dic = m.groupdict()
 			dic['team1'] = self.clean_team_name(dic['team1'])
 			dic['team2'] = self.clean_team_name(dic['team2'])
-			live_matches.append(m.groupdict())
+			live_matches.append(dic)
 
 		# upcoming matches
 		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_upcoming_matches)
@@ -38,7 +38,7 @@ class CsParser:
 			dic = m.groupdict()
 			dic['team1'] = self.clean_team_name(dic['team1'])
 			dic['team2'] = self.clean_team_name(dic['team2'])
-			upcoming_matches.append(m.groupdict())
+			upcoming_matches.append(dic)
 
 		# recent matches
 		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_recent_matches)
