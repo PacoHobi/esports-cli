@@ -17,11 +17,15 @@ class CsPrinter:
 	def __init__(self):
 		pass
 
-	def print_live_matches(self, upcoming_matches):
+	def print_live_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
 		header = ['Team 1', 'Bets','Team 2']
 		rows = []
 		for match in upcoming_matches:
+			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
+				continue
 			team1 = match['team1']
 			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
@@ -30,11 +34,15 @@ class CsPrinter:
 		alignments = ['>', '^', '<']
 		self.print_table(header, rows, alignments=alignments)
 
-	def print_upcoming_matches(self, upcoming_matches):
+	def print_upcoming_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
 		header = ['Team 1', 'Bets', 'Team 2', 'Live in']
 		rows = []
 		for match in upcoming_matches:
+			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
+				continue
 			team1 = match['team1']
 			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
@@ -44,13 +52,17 @@ class CsPrinter:
 		alignments = ['>', '^', '<', '^']
 		self.print_table(header, rows, alignments=alignments)
 
-	def print_recent_matches(self, recent_matches):
+	def print_recent_matches(self, recent_matches, filter=None):
 		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
 		header = ['Team 1', 'Score', 'Team 2', 'Bets']
 
 		# generate rows
 		rows = []
 		for match in recent_matches:
+			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
+				continue
 			team1 = match['team1']
 			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
@@ -61,10 +73,15 @@ class CsPrinter:
 
 		# generate colors
 		colors = [["" for y in range(len(header))] for x in range(len(rows))]
-		for i, match in enumerate(recent_matches):
-			if int(match['winner']) is 1:
+		for i, row in enumerate(rows):
+			score1 = int(row[1].split('-')[0])
+			score2 = int(row[1].split('-')[1])
+			if score1 > score2:
 				colors[i][0] = c.green
 				colors[i][2] = c.red
+			elif score1 == score2:
+				colors[i][0] = c.yellow
+				colors[i][2] = c.yellow
 			else:
 				colors[i][0] = c.red
 				colors[i][2] = c.green
@@ -127,7 +144,7 @@ class CsPrinter:
 			if not compact:
 				rows_text.append(border)
 		# remove last row border
-		if len(rows_text) > 0:
+		if not compact and len(rows_text) > 0:
 			rows_text.pop()
 		
 		# header text

@@ -47,15 +47,15 @@ def handle_csgo(args):
 
 	if args.show in ['all', 'live']:
 		print("\nLive matches")
-		printer.print_live_matches(live_matches)
+		printer.print_live_matches(live_matches, filter=args.filter)
 
 	if args.show in ['all', 'upcoming']:
 		print("\nUpcoming matches")
-		printer.print_upcoming_matches(upcoming_matches)
+		printer.print_upcoming_matches(upcoming_matches, filter=args.filter)
 
 	if args.show in ['all', 'recent']:
 		print("\nRecent matches")
-		printer.print_recent_matches(recent_matches)
+		printer.print_recent_matches(recent_matches, filter=args.filter)
 
 
 def main():
