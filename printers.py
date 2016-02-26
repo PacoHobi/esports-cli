@@ -113,14 +113,14 @@ class CsPrinter:
 					col_widths[j] = col_widths[j] + len(colors[i][j]) + len(c.endc)
 
 		# borders text
-		top_border = u'\u2554' + u"\u2564".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u2557'
-		border = u'\u255F' + u"\u253C".join([u'\u2500' * (x + 2) for x in header_widths]) + u'\u2562'
-		header_border = u'\u2560' + u"\u256A".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u2563'
-		bottom_border = u'\u255A' + u"\u2567".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u255D'
+		top_border = u'\u2552' + u"\u2564".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u2555'
+		border = u'\u251C' + u"\u253C".join([u'\u2500' * (x + 2) for x in header_widths]) + u'\u2524'
+		header_border = u'\u255E' + u"\u256A".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u2561'
+		bottom_border = u'\u2558' + u"\u2567".join([u'\u2550' * (x + 2) for x in header_widths]) + u'\u255B'
 
 		# rows text
-		header_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + header_alignments[i] + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2551'
-		row_format = u'\u2551 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + alignments[i] + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2551'
+		header_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + header_alignments[i] + str(x) + "}" for i,x in enumerate(header_widths)]) + u' \u2502'
+		row_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + alignments[i] + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2502'
 		rows_text = []
 		for row in rows:
 			rows_text.append(row_format.format(row))
