@@ -61,9 +61,3 @@ class CsParser:
 			return self.team_names[name]
 		else:
 			return name
-
-if __name__ == '__main__':
-	parser = CsParser()
-	(live_matches, upcoming_matches, recent_matches) = parser.get_matches()
-	for match in upcoming_matches:
-		print match
