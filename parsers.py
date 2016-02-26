@@ -54,7 +54,7 @@ class CsParser:
 				dic['winner'] = 2
 			recent_matches.append(dic)
 		
-		return ([], upcoming_matches, recent_matches)
+		return (live_matches, upcoming_matches, recent_matches)
 
 	def clean_team_name(self, name):
 		if name in self.team_names.keys():
