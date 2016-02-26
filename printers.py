@@ -1,4 +1,4 @@
-class ansiColors:
+class AnsiColors:
 	defaults = {
 		'red': '\033[31m',
 		'green': '\033[32m',
@@ -10,7 +10,7 @@ class ansiColors:
 	}
 
 	def __init__(self):
-		self.__dict__.update(ansiColors.defaults)
+		self.__dict__.update(AnsiColors.defaults)
 
 
 class CsPrinter:
@@ -18,7 +18,7 @@ class CsPrinter:
 		pass
 
 	def print_live_matches(self, upcoming_matches):
-		c = ansiColors()
+		c = AnsiColors()
 		header = ['Team 1', 'Bets','Team 2']
 		rows = []
 		for match in upcoming_matches:
@@ -31,7 +31,7 @@ class CsPrinter:
 		self.print_table(header, rows, alignments=alignments)
 
 	def print_upcoming_matches(self, upcoming_matches):
-		c = ansiColors()
+		c = AnsiColors()
 		header = ['Team 1', 'Bets', 'Team 2', 'Live in']
 		rows = []
 		for match in upcoming_matches:
@@ -45,7 +45,7 @@ class CsPrinter:
 		self.print_table(header, rows, alignments=alignments)
 
 	def print_recent_matches(self, recent_matches):
-		c = ansiColors()
+		c = AnsiColors()
 		header = ['Team 1', 'Score', 'Team 2', 'Bets']
 
 		# generate rows
@@ -75,7 +75,7 @@ class CsPrinter:
 		self.print_table(header, rows, alignments=alignments, colors=colors)
 
 	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True):
-		c = ansiColors()
+		c = AnsiColors()
 		# calculate columns width
 		header_widths = []
 		col_widths = []
