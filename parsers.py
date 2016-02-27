@@ -1,63 +1,99 @@
 import urllib2, re
 
-class CsParser:
 
-	team_names = {
-		'k1ck eSports...': 'k1ck eSports Club',
-		'Counter...': 'Counter Logic Gaming.CS',
-		'Ninjas in...': 'Ninjas in Pyjamas',
-		'ex-Astral...': 'ex-Astral Authority'
-	}
+class CsParser:
 
 	def __init__(self):
 		pass
 
 	def get_matches(self):
-		response = urllib2.urlopen('http://www.gosugamers.net/counterstrike/gosubet')
-		html = response.read()
-		boxes = re.findall(r'<div class="box">[\s\S]+?(?:<div[^>]+?>[\s\S]+?<\/div>)', html)
-		html_live_matches = boxes[0]
-		html_upcoming_matches = boxes[1]
-		html_recent_matches = boxes[2]
-
-		# live matches
-		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_live_matches)
-		live_matches = []
-		for row in rows:
-			m = re.search(r'<a href="(?P<url>.+?)"[\s\S]+?opp1">[^>]+>(?P<team1>.+?)<[\s\S]+?bet1">\((?P<bet1>\d+)[\s\S]+?bet2">\((?P<bet2>\d+)[\s\S]+?<span>(?P<team2>.+?)<', row)
-			dic = m.groupdict()
-			dic['team1'] = self.clean_team_name(dic['team1'])
-			dic['team2'] = self.clean_team_name(dic['team2'])
-			live_matches.append(dic)
-
-		# upcoming matches
-		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_upcoming_matches)
-		upcoming_matches = []
-		for row in rows:
-			m = re.search(r'<a href="(?P<url>.+?)"[\s\S]+?opp1">[^>]+>(?P<team1>.+?)<[\s\S]+?bet1">\((?P<bet1>\d+)[\s\S]+?bet2">\((?P<bet2>\d+)[\s\S]+?<span>(?P<team2>.+?)<[\s\S]+?live-in">[^0-9]+(?P<live_in>[^m]+m)', row)
-			dic = m.groupdict()
-			dic['team1'] = self.clean_team_name(dic['team1'])
-			dic['team2'] = self.clean_team_name(dic['team2'])
-			upcoming_matches.append(dic)
-
-		# recent matches
-		rows = re.findall(r'<tr>[\s\S]+?<\/tr>', html_recent_matches)
-		recent_matches = []
-		for row in rows:
-			m = re.search(r'<a href="(?P<url>.+?)"[\s\S]+?opp1">[^>]+>(?P<team1>.+?)<[\s\S]+?bet1">\((?P<bet1>\d+)[\s\S]+?bet2">\((?P<bet2>\d+)[\s\S]+?<span>(?P<team2>.+?)<[\s\S]+?score[^->]+>(?P<score1>\d+)[\s\S]+?score[^>]+>(?P<score2>\d+)', row)
-			dic = m.groupdict()
-			dic['team1'] = self.clean_team_name(dic['team1'])
-			dic['team2'] = self.clean_team_name(dic['team2'])
-			if int(dic['score1']) > int(dic['score2']):
-				dic['winner'] = 1
-			else:
-				dic['winner'] = 2
-			recent_matches.append(dic)
+		# get live and upcoming matches
+		req = urllib2.Request('http://www.hltv.org/matches/', headers={'User-Agent': "Magic Browser"}) 
+		res = urllib2.urlopen(req)
+		html = res.read()
 		
+		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
+		matches_ids = re.findall(r'<a .*?href="\/match\/((\d+)[^"]+)', " ".join(matches_html))
+
+		matches = []
+		for match_html in matches_html:
+			match_fields = re.split(r'<[^>]+>', match_html)
+			match_fields = [x.strip() for x in match_fields]
+			match_fields = [x for x in match_fields if len(x) > 0]
+			matches.append(match_fields)
+		
+		# get recent matches
+		req = urllib2.Request('http://www.hltv.org/results/', headers={'User-Agent': "Magic Browser"}) 
+		res = urllib2.urlopen(req)
+		html = res.read()
+		
+		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
+		matches_ids.extend(re.findall(r'<a .*?href="\/match\/((\d+)[^"]+)', " ".join(matches_html)))
+
+		for match_html in matches_html:
+			match_fields = re.split(r'<[^>]+>', match_html)
+			match_fields = [x.strip() for x in match_fields]
+			match_fields = [x for x in match_fields if len(x) > 0]
+			matches.append(match_fields)
+
+		live_matches = []
+		upcoming_matches = []
+		recent_matches = []
+		for i,fields in enumerate(matches):
+			match_url = matches_ids[i][0]
+			match_id = matches_ids[i][1]
+			if len(fields) == 6:
+				match = {
+					'match_id': match_id,
+					'time': fields[0],
+					'team1': fields[1],
+					'team2': fields[4],
+					'bo': fields[2]
+				}
+				upcoming_matches.append(match)
+			elif len(fields) == 7:
+				match = {
+					'match_id': match_id,
+					'team1': fields[1],
+					'team2': fields[5],
+					'score1': fields[2],
+					'score2': fields[4],
+					'map': fields[0]
+				}
+				recent_matches.append(match)
+			elif len(fields) == 8:
+				match = {
+					'match_id': match_id,
+					'team1': fields[1],
+					'team2': fields[6],
+					'score1': fields[3],
+					'score2': fields[5],
+					'map': fields[2],
+					'wins1': None,
+					'wins2': None
+				}
+				live_matches.append(match)
+			elif len(fields) == 9:
+				match = {
+					'match_id': match_id,
+					'team1': fields[1],
+					'team2': fields[7],
+					'score1': fields[3],
+					'score2': fields[5],
+					'map': fields[2],
+					'wins1': fields[6].split(' - ')[0],
+					'wins2': fields[6].split(' - ')[1]
+				}
+				live_matches.append(match)
+
 		return (live_matches, upcoming_matches, recent_matches)
 
-	def clean_team_name(self, name):
-		if name in self.team_names.keys():
-			return self.team_names[name]
-		else:
-			return name
+
+
+
+			
+if __name__ == '__main__':
+	from printers import CsPrinter
+	parser = HltvCsParser()
+	(live_matches, upcoming_matches) = parser.get_matches()
+	printer = CsPrinter()

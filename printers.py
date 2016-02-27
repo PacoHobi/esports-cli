@@ -21,77 +21,88 @@ class CsPrinter:
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['Team 1', 'Bets','Team 2']
+		header = ['ID', 'Team 1', 'Score','Team 2', 'Map']
 		rows = []
 		for match in upcoming_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
+			match_id = match['match_id']
 			team1 = match['team1']
-			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
-			row = [team1, bets, team2]
+			score = "{:>2} - {:<2}".format(match['score1'], match['score2'])
+			map = match['map']
+			if map[:-1] == "Best of ":
+				map = "bo" + map[-1:]
+			if match['wins1'] and match['wins2']:
+				map += " (%s-%s)" %(match['wins1'], match['wins2'])
+			row = [match_id, team1, score, team2, map]
 			rows.append(row)
-		alignments = ['>', '^', '<']
-		self.print_table(header, rows, alignments=alignments)
+		alignments = ['<', '>', '^', '<', '<']
+		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
 
 	def print_upcoming_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['Team 1', 'Bets', 'Team 2', 'Live in']
+		header = ['ID', 'Team 1', 'Bo', 'Team 2', 'Time']
 		rows = []
 		for match in upcoming_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
+			match_id = match['match_id']
 			team1 = match['team1']
-			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
-			live_in = match['live_in']
-			row = [team1, bets, team2, live_in]
+			bo = match['bo']
+			if bo == "Best of 1":
+				bo = "bo1"
+			time = match['time']
+			row = [match_id, team1, bo, team2, time]
 			rows.append(row)
-		alignments = ['>', '^', '<', '^']
-		self.print_table(header, rows, alignments=alignments)
+		alignments = ['<', '>', '^', '<', '^']
+		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
 
 	def print_recent_matches(self, recent_matches, filter=None):
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['Team 1', 'Score', 'Team 2', 'Bets']
+		header = ['ID', 'Team 1', 'Score', 'Team 2', 'Map']
 
 		# generate rows
 		rows = []
 		for match in recent_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
+			match_id = match['match_id']
 			team1 = match['team1']
-			bets = "{:>3} % {}".format(match['bet1'], match['bet2'])
 			team2 = match['team2']
 			score = "{:>2} - {}".format(match['score1'], match['score2'])
-			# score = match['score1'] + " - " + match['score2']
-			row = [team1, score, team2, bets]
+			map = match['map']
+			if map[:-1] == "Best of ":
+				map = "bo" + map[-1:]
+			row = [match_id, team1, score, team2, map]
 			rows.append(row)
 
 		# generate colors
 		colors = [["" for y in range(len(header))] for x in range(len(rows))]
 		for i, row in enumerate(rows):
-			score1 = int(row[1].split('-')[0])
-			score2 = int(row[1].split('-')[1])
+			score1 = int(row[2].split('-')[0])
+			score2 = int(row[2].split('-')[1])
 			if score1 > score2:
-				colors[i][0] = c.green
-				colors[i][2] = c.red
+				colors[i][1] = c.green
+				colors[i][3] = c.red
 			elif score1 == score2:
-				colors[i][0] = c.yellow
-				colors[i][2] = c.yellow
+				colors[i][1] = c.yellow
+				colors[i][3] = c.yellow
 			else:
-				colors[i][0] = c.red
-				colors[i][2] = c.green
+				colors[i][1] = c.red
+				colors[i][3] = c.green
 
 		# alignments
-		alignments = ['>', '^', '<', '^']
+		alignments = ['<', '>', '^', '<', '<']
 
-		self.print_table(header, rows, alignments=alignments, colors=colors)
+		self.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
 
-	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True):
+	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True, decode=None):
 		c = AnsiColors()
 		# calculate columns width
 		header_widths = []
@@ -140,6 +151,8 @@ class CsPrinter:
 		row_format = u'\u2502 ' + u" \u2502 ".join(["{0[" + str(i) + "]:" + alignments[i] + str(x) + "}" for i,x in enumerate(col_widths)]) + u' \u2502'
 		rows_text = []
 		for row in rows:
+			if decode:
+				row = [x.decode(decode) for x in row]
 			rows_text.append(row_format.format(row))
 			if not compact:
 				rows_text.append(border)
