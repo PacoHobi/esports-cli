@@ -54,6 +54,8 @@ class CsParser:
 				}
 				upcoming_matches.append(match)
 			elif len(fields) == 7:
+				if fields[0] == 'Finished':
+					continue
 				match = {
 					'match_id': match_id,
 					'match_url': match_url,
