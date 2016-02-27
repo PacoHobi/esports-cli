@@ -102,6 +102,22 @@ class CsPrinter:
 
 		self.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
 
+	def print_match_details(self, match_details):
+		header = ['Map', 'Score', '1 Half', '2 Half']
+		rows = []
+		for map in match_details['maps']:
+			map_name = map['map']
+			score = "{:>2} - {:<2}".format(map['team1'], map['team2'])
+			half1 = "{:>2} - {:<2}".format(map['half1_1'], map['half1_2'])
+			half1 = "{:>2} - {:<2}".format(map['half1_1'], map['half1_2'])
+			half2 = "{:>2} - {:<2}".format(map['half2_1'], map['half2_2'])
+			row = [map_name, score, half1, half2]
+			rows.append(row)
+		alignments = ['<', '^', '^', '^']
+		self.print_table(header, rows, alignments=alignments)
+
+
+
 	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True, decode=None):
 		c = AnsiColors()
 		# calculate columns width

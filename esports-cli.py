@@ -1,4 +1,4 @@
-import argparse
+import argparse, sys
 from parsers import CsParser
 from printers import CsPrinter, AnsiColors
 
@@ -35,6 +35,13 @@ def parse_arguments():
 		help = 'filter to use on team names'
 	)
 
+	# match argument
+	parser.add_argument(
+		'-m', '--match',
+		metavar = 'ID',
+		help = 'specify a match ID to show detailed information',
+	)	
+
 	args = parser.parse_args()
 	return args
 
@@ -44,6 +51,22 @@ def handle_csgo(args):
 	parser = CsParser()
 	printer = CsPrinter()
 	(live_matches, upcoming_matches, recent_matches) = parser.get_matches()
+
+	# match details
+	if args.match:
+		# get all match_id->match_url pairs
+		match_ids = [x['match_id'] for x in live_matches]
+		match_ids.extend([x['match_id'] for x in upcoming_matches])
+		match_ids.extend([x['match_id'] for x in recent_matches])
+
+		# check if the given ID is known
+		if args.match not in match_ids:
+			error("Match %s not found" %(args.match))
+
+		# parse match details an print them out
+		match_details = parser.get_match_details(args.match)
+		printer.print_match_details(match_details)
+		return
 
 	if args.show in ['all', 'live']:
 		print("\nLive matches")
@@ -56,6 +79,11 @@ def handle_csgo(args):
 	if args.show in ['all', 'recent']:
 		print("\nRecent matches")
 		printer.print_recent_matches(recent_matches, filter=args.filter)
+
+def error(msg):
+	c = AnsiColors()
+	print("%sERROR%s: %s" %(c.red, c.endc, msg))
+	sys.exit(0)
 
 
 def main():
