@@ -191,6 +191,7 @@ class CsPrinter:
 				row = [name, k, d, diff, hs, rating]
 				rows.append(row)
 			self.print_table(header, rows, decode='iso-8859-1')
+			header = [team2, 'K', 'D', '+/-', 'HS %', 'Rating']
 			rows = []
 			for i in range(len(map_stats)/2, len(map_stats)):
 				stats = map_stats[i]
