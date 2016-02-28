@@ -108,6 +108,7 @@ class CsParser:
 		# default values
 		match_details = {
 			'match_id': match_id,
+			'live': False,
 			'team1': {'name':'', 'country':'', 'roster':[]},
 			'team2': {'name':'', 'country':'', 'roster':[]},
 			'winner': 0,
@@ -139,6 +140,12 @@ class CsParser:
 		text = [x.strip() for x in text]
 		match_details['date'] = text[0]
 		match_details['time'] = text[1]
+
+		# live
+		# <div .*?id="time">
+		html = re.search(r'<div .*?id="time">', full_html)
+		match_details['live'] = html != None
+
 
 		# event
 		html = re.search(r'<div style="text-align:center;font-size: 18px;">[\s\n\t\r]*<a.+?>([^<]+)<\/a>', full_html)

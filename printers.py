@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import re
 
 
@@ -8,7 +11,7 @@ class AnsiColors:
 		'yellow': '\033[33m',
 		'blue': '\033[34m',
 		'magenta': '\033[35m',
-		'cyan': '\033[35m',
+		'cyan': '\033[36m',
 		'endc': '\033[m',
 		'bold': '\033[1m'
 	}
@@ -133,8 +136,12 @@ class CsPrinter:
 			match_details['team2']['country']
 		)
 		header = "%s vs %s" % (team1, team2)
+		# live
+		live = ''
+		if match_details['live']:
+			live = '%s(live)%s' %(c.red, c.endc)
 		# date
-		date_time = "%s @ %s" %(match_details['date'], match_details['time'])
+		date_time = "%s @ %s %s" %(match_details['date'], match_details['time'], live)
 		# event
 		event = match_details['event']
 		self.print_box([header, date_time, event], alignment='^')
@@ -220,7 +227,7 @@ class CsPrinter:
 
 		for i,line in enumerate(lines):
 			if decode:
-				line = [x.decode(decode) for x in line]
+				line = line.decode(decode)
 			color_length = len(lines[i]) - len(raw_lines[i])
 			line_format = u'\u2502 {:%s%d} \u2502' % (alignment, length + color_length)
 			lines[i] = line_format.format(line)
