@@ -1,3 +1,6 @@
+import re
+
+
 class AnsiColors:
 	defaults = {
 		'red': '\033[31m',
@@ -6,7 +9,8 @@ class AnsiColors:
 		'blue': '\033[34m',
 		'magenta': '\033[35m',
 		'cyan': '\033[35m',
-		'endc': '\033[m'
+		'endc': '\033[m',
+		'bold': '\033[1m'
 	}
 
 	def __init__(self):
@@ -103,6 +107,39 @@ class CsPrinter:
 		self.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
 
 	def print_match_details(self, match_details):
+		c = AnsiColors()
+
+		# heading
+		# team names and countries
+		if match_details['winner'] == 1:
+			color1 = c.green
+			color2 = c.red
+		elif match_details['winner'] == 1:
+			color1 = c.red
+			color2 = c.green
+		else:
+			color1 = c.yellow
+			color2 = c.yellow
+		team1 = "(%s) %s%s%s" %(
+			match_details['team1']['country'],
+			color1 + c.bold,
+			match_details['team1']['name'],
+			c.endc
+		)
+		team2 = "%s%s%s (%s)" %(
+			color2 + c.bold,
+			match_details['team2']['name'],
+			c.endc,
+			match_details['team2']['country']
+		)
+		header = "%s vs %s" % (team1, team2)
+		# date
+		date_time = "%s @ %s" %(match_details['date'], match_details['time'])
+		# event
+		event = match_details['event']
+		self.print_box([header, date_time, event], alignment='^')
+
+		# map general scores
 		header = ['Map', 'Score', '1 Half', '2 Half']
 		rows = []
 		for map in match_details['maps']:
@@ -114,9 +151,83 @@ class CsPrinter:
 			row = [map_name, score, half1, half2]
 			rows.append(row)
 		alignments = ['<', '^', '^', '^']
-		self.print_table(header, rows, alignments=alignments)
+		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+
+		# maps stats
+		for map in match_details['maps']:
+			team1 = match_details['team1']['name']
+			team2 = match_details['team2']['name']
+			score1 = map['team1']
+			score2 = map['team2']
+			map_name = map['map']
+			score = "{:>2} - {:<2}".format(map['team1'], map['team2'])
+			map_stats = map['stats']
+
+			if int(score1) > int(score2):
+				color1 = c.green
+				color2 = c.red
+			elif int(score1) < int(score2):
+				color1 = c.red
+				color2 = c.green
+			else:
+				color1 = c.yellow
+				color2 = c.yellow
+			print("\n%s %s%s%s %s - %s %s%s%s" %(
+				map_name,
+				color1, team1, c.endc, score1,
+				score2, color2, team2, c.endc	
+			))
+
+			header = [team1, 'K', 'D', '+/-', 'HS %', 'Rating']
+			rows = []
+			for i in range(len(map_stats)/2):
+				stats = map_stats[i]
+				name = stats['player']
+				k = stats['k']
+				d = stats['d']
+				diff = stats['diff']
+				hs = stats['hs']
+				rating = stats['rating']
+				row = [name, k, d, diff, hs, rating]
+				rows.append(row)
+			self.print_table(header, rows, decode='iso-8859-1')
+			rows = []
+			for i in range(len(map_stats)/2, len(map_stats)):
+				stats = map_stats[i]
+				name = stats['player']
+				k = stats['k']
+				d = stats['d']
+				diff = stats['diff']
+				hs = stats['hs']
+				rating = stats['rating']
+				row = [name, k, d, diff, hs, rating]
+				rows.append(row)
+			self.print_table(header, rows, decode='iso-8859-1')
 
 
+	def print_box(self, text, alignment='<', decode=None):
+		lines = text
+		if type(text) is str:
+			lines = lines.split('\n')
+		raw_lines = lines[:]
+		for i,line in enumerate(raw_lines):
+			raw_lines[i] = re.sub(r'\x1b[^m]*m', '', line)
+		length = max([len(x) for x in raw_lines])
+
+		top_border = u'\u250C' + u'\u2500' * (length + 2) + u'\u2510'
+		bottom_border = u'\u2514' + u'\u2500' * (length + 2) + u'\u2518'
+
+		for i,line in enumerate(lines):
+			if decode:
+				line = [x.decode(decode) for x in line]
+			color_length = len(lines[i]) - len(raw_lines[i])
+			line_format = u'\u2502 {:%s%d} \u2502' % (alignment, length + color_length)
+			lines[i] = line_format.format(line)
+
+		print(top_border)
+		for line in lines:
+			print(line)
+		print(bottom_border)
 
 	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True, decode=None):
 		c = AnsiColors()
