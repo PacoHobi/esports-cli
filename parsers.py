@@ -132,14 +132,14 @@ class CsParser:
 		match_details['team1']['country'] = countries[0]
 		match_details['team2']['country'] = countries[1]
 
-		#date
+		# date
 		html = re.search(r'<div style="text-align:center;font-size:[^>]+>([\s\S]+?)<\/div>', full_html)
 		html = html.group(1)
 		text = re.findall(r'<span[^>]*>([\s\S]+?)<\/span>', html)
 		text = [x.strip() for x in text]
 		match_details['date'] = text[0]
 		match_details['time'] = text[1]
-		
+
 		# event
 		html = re.search(r'<div style="text-align:center;font-size: 18px;">[\s\n\t\r]*<a.+?>([^<]+)<\/a>', full_html)
 		event = html.group(1)
