@@ -181,7 +181,6 @@ class CsParser:
 		# map details
 		# get gamestatids
 		game_stat_ids = re.findall(r'<span id="map_link_(\d+)"', full_html)
-		print(game_stat_ids)
 		game_stat_html = []
 		# get stat html for each game
 		for id in game_stat_ids:
@@ -212,6 +211,6 @@ class CsParser:
 			match_details['maps'][game_n]['stats'] = stats
 
 		pp = pprint.PrettyPrinter()
-		pp.pprint(match_details)
+		# pp.pprint(match_details)
 
 		return match_details
