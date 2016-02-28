@@ -114,7 +114,7 @@ class CsPrinter:
 		if match_details['winner'] == 1:
 			color1 = c.green
 			color2 = c.red
-		elif match_details['winner'] == 1:
+		elif match_details['winner'] == 2:
 			color1 = c.red
 			color2 = c.green
 		else:
@@ -163,10 +163,10 @@ class CsPrinter:
 			score = "{:>2} - {:<2}".format(map['team1'], map['team2'])
 			map_stats = map['stats']
 
-			if int(score1) > int(score2):
+			if score1 > score2:
 				color1 = c.green
 				color2 = c.red
-			elif int(score1) < int(score2):
+			elif score1 < score2:
 				color1 = c.red
 				color2 = c.green
 			else:

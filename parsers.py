@@ -160,12 +160,12 @@ class CsParser:
 			nums.extend([0] * (6 - len(nums)))
 			score = {
 				'map': map_names[i],
-				'team1': nums[0],
-				'team2': nums[1],
-				'half1_1': nums[2],
-				'half1_2': nums[3],
-				'half2_1': nums[4],
-				'half2_2': nums[5],
+				'team1': int(nums[0]),
+				'team2': int(nums[1]),
+				'half1_1': int(nums[2]),
+				'half1_2': int(nums[3]),
+				'half2_1': int(nums[4]),
+				'half2_2': int(nums[5]),
 				'stats': []
 			}
 			match_details['maps'].append(score)
