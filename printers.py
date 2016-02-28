@@ -13,7 +13,11 @@ class AnsiColors:
 		'magenta': '\033[35m',
 		'cyan': '\033[36m',
 		'endc': '\033[m',
-		'bold': '\033[1m'
+		'bold': '\033[1m',
+		'blink': '\033[5m',
+		'italic': '\033[3m',
+		'underline': '\033[4m',
+		'negative': '\033[7m'
 	}
 
 	def __init__(self):
