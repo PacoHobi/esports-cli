@@ -48,6 +48,7 @@ class CsParser:
 				match = {
 					'match_id': match_id,
 					'match_url': match_url,
+					'type': 'upcoming',
 					'time': fields[0],
 					'team1': fields[1],
 					'team2': fields[4],
@@ -60,6 +61,7 @@ class CsParser:
 				match = {
 					'match_id': match_id,
 					'match_url': match_url,
+					'type': 'recent',
 					'team1': fields[1],
 					'team2': fields[5],
 					'score1': fields[2],
@@ -71,6 +73,7 @@ class CsParser:
 				match = {
 					'match_id': match_id,
 					'match_url': match_url,
+					'type': 'live',
 					'team1': fields[1],
 					'team2': fields[6],
 					'score1': fields[3],
@@ -83,6 +86,8 @@ class CsParser:
 			elif len(fields) == 9:
 				match = {
 					'match_id': match_id,
+					'match_url': match_url,
+					'type': 'live',
 					'team1': fields[1],
 					'team2': fields[7],
 					'score1': fields[3],

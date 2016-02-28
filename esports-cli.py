@@ -51,6 +51,9 @@ def handle_csgo(args):
 	parser = CsParser()
 	printer = CsPrinter()
 	(live_matches, upcoming_matches, recent_matches) = parser.get_matches()
+	all_matches = live_matches[:]
+	all_matches.extend(upcoming_matches)
+	all_matches.extend(recent_matches)
 
 	# match details
 	if args.match:
@@ -61,7 +64,25 @@ def handle_csgo(args):
 
 		# check if the given ID is known
 		if args.match not in match_ids:
-			error("Match %s not found" %(args.match))
+			# check for a unique partial match
+			matches = []
+			for id in match_ids:
+				if args.match in id:
+					matches.append(id)
+			# unique partial match
+			if len(matches) == 1:
+				args.match = matches[0]
+			# a few partial matches, make suggestion
+			elif len(matches) in range(2,11):
+				matches = [m for m in all_matches if m['match_id'] in matches]
+				for i,m in enumerate(matches):
+					matches[i] = "\t%s - %s vs %s (%s)" %(m['match_id'], m['team1'], m['team2'], m['type'])
+				msg = "\n".join(sorted(matches))
+				msg = "Match %s not found.\n\nDid you mean one of these matches?\n" %(args.match) + msg
+				print_error(msg)
+			# none or to many matches, just give an error
+			else:
+				print_error("Match %s not found" %(args.match))
 
 		# parse match details an print them out
 		match_details = parser.get_match_details(args.match)
@@ -80,7 +101,15 @@ def handle_csgo(args):
 		print("\nRecent matches")
 		printer.print_recent_matches(recent_matches, filter=args.filter)
 
-def error(msg):
+def print_info(msg):
+	c = AnsiColors()
+	print("%sINFO%s: %s" %(c.blue, c.endc, msg))
+
+def print_warning(msg):
+	c = AnsiColors()
+	print("%sWARNING%s: %s" %(c.blue, c.endc, msg))
+
+def print_error(msg):
 	c = AnsiColors()
 	print("%sERROR%s: %s" %(c.red, c.endc, msg))
 	sys.exit(0)
@@ -93,7 +122,7 @@ def main():
 	if args.game == 'csgo':
 		handle_csgo(args)
 	else:
-		print("%sERROR:%s %s is not yet supported" %(c.red, c.endc, args.game.upper()))
+		print_error("%s is not yet supported" %(c.red, c.endc, args.game.upper()))
 
 
 if __name__ == '__main__':
