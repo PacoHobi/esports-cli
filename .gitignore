@@ -1,4 +1,6 @@
 *.pyc
 *.txt
 *.gif
+*.jpg
+*.png
 record_utility.py
