@@ -1,4 +1,4 @@
-import urllib2, re, json
+import urllib2, re, json, HTMLParser
 import pprint
 
 class CsParser:
@@ -11,7 +11,8 @@ class CsParser:
 		# get live and upcoming matches
 		req = urllib2.Request(self.base_url + '/matches/', headers={'User-Agent': "Magic Browser"}) 
 		res = urllib2.urlopen(req)
-		html = res.read()
+		html = res.read().decode('utf-8')
+		html = decode_html_entities(html)
 		
 		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
 		matches_ids = re.findall(r'<a .*?href="(\/match\/(\d+)[^"]+)', " ".join(matches_html))
@@ -26,7 +27,7 @@ class CsParser:
 		# get recent matches
 		req = urllib2.Request(self.base_url + '/results/', headers={'User-Agent': "Magic Browser"}) 
 		res = urllib2.urlopen(req)
-		html = res.read()
+		html = res.read().decode('utf-8')
 		
 		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
 		matches_ids.extend(re.findall(r'<a .*?href="(\/match\/(\d+)[^"]+)', " ".join(matches_html)))
@@ -102,7 +103,8 @@ class CsParser:
 	def get_match_details(self, match_id):
 		req = urllib2.Request(self.match_url + match_id, headers={'User-Agent': "Magic Browser"}) 
 		res = urllib2.urlopen(req)
-		full_html = res.read()
+		full_html = res.read().decode('latin1')
+		full_html = decode_html_entities(full_html)
 
 		# default values
 		match_details = {
@@ -198,8 +200,9 @@ class CsParser:
 			url = self.base_url + "/?pageid=113&matchid=%s&mapdetails=1&gamestatid=%s&half=0&clean=1" %(match_id, id)
 			req = urllib2.Request(url, headers={'User-Agent': "Magic Browser"}) 
 			res = urllib2.urlopen(req)
+			html = res.read().decode('latin1')
+			html = decode_html_entities(html)
 
-			html = res.read()
 			game_stat_html.append(html)
 		# extract the information
 		for game_n,html in enumerate(game_stat_html):
@@ -254,3 +257,13 @@ class DotaParser:
 				upcoming_matches.append(match)
 		return (live_matches, upcoming_matches)
 
+
+def decode_html_entities(html):
+	parser = HTMLParser.HTMLParser()
+	regexp = "&.+?;"
+	html_entities = re.findall(regexp, html)
+	for e in html_entities:
+		parser = HTMLParser.HTMLParser()
+		unescaped = parser.unescape(e)
+		html = html.replace(e, unescaped)
+	return html

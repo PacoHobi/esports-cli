@@ -50,7 +50,7 @@ class CsPrinter:
 			row = [match_id, team1, score, team2, map]
 			rows.append(row)
 		alignments = ['<', '>', '^', '<', '<']
-		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments)
 
 	def print_upcoming_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
@@ -71,7 +71,7 @@ class CsPrinter:
 			row = [match_id, team1, bo, team2, time]
 			rows.append(row)
 		alignments = ['<', '>', '^', '<', '^']
-		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments)
 
 	def print_recent_matches(self, recent_matches, filter=None):
 		c = AnsiColors()
@@ -112,7 +112,7 @@ class CsPrinter:
 		# alignments
 		alignments = ['<', '>', '^', '<', '<']
 
-		Utils.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments, colors=colors)
 
 	def print_match_details(self, match_details):
 		c = AnsiColors()
@@ -163,7 +163,7 @@ class CsPrinter:
 			row = [map_name, score, half1, half2]
 			rows.append(row)
 		alignments = ['<', '^', '^', '^']
-		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments)
 
 		# maps stats
 		for map in match_details['maps']:
@@ -202,7 +202,7 @@ class CsPrinter:
 				rating = stats['rating']
 				row = [name, k, d, diff, hs, rating]
 				rows.append(row)
-			Utils.print_table(header, rows, decode='iso-8859-1')
+			Utils.print_table(header, rows)
 			header = [team2, 'K', 'D', '+/-', 'HS %', 'Rating']
 			rows = []
 			for i in range(len(map_stats)/2, len(map_stats)):
@@ -215,7 +215,7 @@ class CsPrinter:
 				rating = stats['rating']
 				row = [name, k, d, diff, hs, rating]
 				rows.append(row)
-			Utils.print_table(header, rows, decode='iso-8859-1')
+			Utils.print_table(header, rows)
 
 
 class DotaPrinter:
@@ -346,7 +346,9 @@ class Utils:
 		rows_text = []
 		for row in rows:
 			if decode:
+				print row
 				row = [x.decode(decode) for x in row]
+				print row
 			rows_text.append(row_format.format(row))
 			if not compact:
 				rows_text.append(border)
