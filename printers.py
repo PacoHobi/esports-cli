@@ -267,6 +267,41 @@ class DotaPrinter:
 		alignments = ['<', '>', '^', '<', '<']
 		Utils.print_table(header, rows, alignments=alignments)
 
+	def print_match_details(self, match_details):
+		c = AnsiColors()
+
+		# heading
+		# team names and countries
+		try:
+			if match_details['team1']['winner']:
+				color1 = c.green
+				color2 = c.red
+			elif match_details['team2']['winner']:
+				color1 = c.red
+				color2 = c.green
+		except:
+			color1 = c.yellow
+			color2 = c.yellow
+		team1 = "(%s) %s%s%s" %(
+			match_details['team1']['country_code'].upper(),
+			color1 + c.bold,
+			match_details['team1']['team_name'],
+			c.endc
+		)
+		team2 = "%s%s%s (%s)" %(
+			color2 + c.bold,
+			match_details['team2']['team_name'],
+			c.endc,
+			match_details['team2']['country_code'].upper()
+		)
+		header = "%s vs %s" % (team1, team2)
+		# date
+		date_time = TimeClass.localtime(float(match_details['starttime_unix']))
+		date_time = TimeClass.strftime('%x @ %X', date_time)
+		# event
+		event = match_details['league']['name']
+		Utils.print_box([header, date_time, event], alignment='^')
+
 
 class Utils:
 

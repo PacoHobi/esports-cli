@@ -135,7 +135,9 @@ def handle_dota(args):
 
 		# parse match details an print them out
 		# match_details = parser.get_match_details(args.match)
-		# printer.print_match_details(match_details)
+		match_details = [x for x in all_matches if x['match_id'] == args.match]
+		match_details = match_details[0]
+		printer.print_match_details(match_details)
 		return
 
 	if args.show in ['all', 'live']:
