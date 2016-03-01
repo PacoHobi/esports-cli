@@ -16,7 +16,7 @@ More games will be supported in the future.
 
 ## Usage
 ```
-$ esports -h
+$ python esports-cli.py -h
 usage: esports-cli.py [-h] [-g {dota,csgo,hs,hots,lol}]
                       [-s {all,live,upcoming,recent}] [-f FILTER] [-m ID]
 
@@ -34,28 +34,28 @@ optional arguments:
 ## Examples
 #### Show all Dota 2 matches:
 ```
-python esports-cli.py -g dota
+$ python esports-cli.py -g dota
 ```
 
 #### Show only live Dota 2 matches:
 ```
-python esports-cli.py -g dota -s live
+$ python esports-cli.py -g dota -s live
 ```
 
 #### Show all CSGO matches, filtering for `cloud`:
 ```
-python esports-cli.py -g csgo -f cloud
+$ python esports-cli.py -g csgo -f cloud
 ```
 
 #### Show only upcoming CSGO matches, filtering for `liquid`:
 ```
-python esports-cli.py -g csgo -s upcoming -f liquid
+$ python esports-cli.py -g csgo -s upcoming -f liquid
 ```
 
 #### Show CSGO match details for partial ID `87`:
 Writing part of an ID is enough, as long as it only matches one ID (e.g. you can type `87` instead of `2301087`).
 ```
-python esports-cli.py -g csgo -m 87
+$ python esports-cli.py -g csgo -m 87
 ```
 
 ## Contributing
