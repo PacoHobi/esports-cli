@@ -1,4 +1,5 @@
-import urllib2, re, json, HTMLParser
+import urllib2, re, json, HTMLParser, datetime
+import time as TimeClass
 import pprint
 
 class CsParser:
@@ -269,11 +270,14 @@ class DotaParser:
 		texts = [x.strip() for x in texts]
 		texts = [x for x in texts if len(x) > 0]
 		match_ids = re.findall(r'<a[^>]+ href="\/match\/(.+?)"', html)
+
 		# fill into recent_matches
 		recent_matches = []
 		for i in range(3, len(texts), 6):
 			fields = texts[i:i+6]
-			time = fields[0]
+			time = int(fields[0].split()[0])
+			time = datetime.datetime.now() - datetime.timedelta(hours=time)
+			time = TimeClass.mktime(time.timetuple())
 			bo = fields[1][-1]
 			event = fields[2]
 			team1 = fields[3]

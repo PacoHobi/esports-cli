@@ -226,7 +226,7 @@ class DotaPrinter:
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['ID', 'Team 1', 'Score','Team 2', 'Bo']
+		header = ['ID', 'Team 1', 'Score','Team 2', 'Bo', 'Event']
 		rows = []
 		for match in live_matches:
 			if filter and filter not in match['team1']['team_name'].lower() and \
@@ -235,20 +235,21 @@ class DotaPrinter:
 						  filter not in match['team2']['team_tag'].lower():
 				continue
 			match_id = match['match_id']
+			event = match['league']['name']
 			team1 = match['team1']['team_tag']
 			team2 = match['team2']['team_tag']
 			score = "{:>2} - {:<2}".format(match['team1']['score'], match['team2']['score'])
 			bo = "bo" + match['series_type']
-			row = [match_id, team1, score, team2, bo]
+			row = [match_id, team1, score, team2, bo, event]
 			rows.append(row)
-		alignments = ['<', '>', '^', '<', '<']
+		alignments = ['<', '>', '^', '<', '<', '<']
 		Utils.print_table(header, rows, alignments=alignments)
 
 	def print_upcoming_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['ID', 'Team 1', 'Bo', 'Team 2', 'Time']
+		header = ['ID', 'Team 1', 'Bo', 'Team 2', 'Event', 'Time']
 		rows = []
 		for match in upcoming_matches:
 			if filter and filter not in match['team1']['team_name'].lower() and \
@@ -257,21 +258,22 @@ class DotaPrinter:
 						  filter not in match['team2']['team_tag'].lower():
 				continue
 			match_id = match['match_id']
+			event = match['league']['name']
 			team1 = match['team1']['team_tag']
 			team2 = match['team2']['team_tag']
 			bo = "bo%d" % match['series_type']
 			time = TimeClass.localtime(float(match['starttime_unix']))
-			time = TimeClass.strftime('%x %H:%M', time)
-			row = [match_id, team1, bo, team2, time]
+			time = TimeClass.strftime('%d %b %H:%M', time)
+			row = [match_id, team1, bo, team2, event, time]
 			rows.append(row)
-		alignments = ['<', '>', '^', '<', '<']
+		alignments = ['<', '>', '^', '<', '<', '<']
 		Utils.print_table(header, rows, alignments=alignments)
 
 	def print_recent_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
-		header = ['ID', 'Team 1', 'Score', 'Team 2', 'Bo', 'Time']
+		header = ['ID', 'Team 1', 'Score', 'Team 2', 'Event']
 
 		# generate rows
 		rows = []
@@ -279,12 +281,12 @@ class DotaPrinter:
 			if filter and filter not in match['team1'] and filter not in match['team2']:
 				continue
 			match_id = match['match_id']
+			event = match['event']
 			team1 = match['team1']
 			team2 = match['team2']
-			score = "{:>2} - {:<2}".format(match['score1'], match['score2'])
+			score = "{} - {}".format(match['score1'], match['score2'])
 			bo = "bo%s" % match['bo']
-			time = match['time']
-			row = [match_id, team1, score, team2, bo, time]
+			row = [match_id, team1, score, team2, event]
 			rows.append(row)
 
 		# generate colors
@@ -303,7 +305,7 @@ class DotaPrinter:
 				colors[i][3] = c.green
 
 		# alignments
-		alignments = ['<', '>', '^', '<', '<', '<']
+		alignments = ['<', '>', '^', '<', '<']
 
 		Utils.print_table(header, rows, colors=colors, alignments=alignments)
 
