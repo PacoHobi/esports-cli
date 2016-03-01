@@ -1,12 +1,11 @@
-import urllib2, re
+import urllib2, re, json
 import pprint
 
 class CsParser:
 
 	def __init__(self):
 		self.base_url = "http://www.hltv.org"
-		self.match_url = self.base_url + '/?pageid=12&matchid=' 
-		# http://www.hltv.org//?pageid=113&matchid=2301070&mapdetails=1&gamestatid=28356&half=0&clean=1
+		self.match_url = self.base_url + '/?pageid=12&matchid='
 
 	def get_matches(self):
 		# get live and upcoming matches
@@ -226,3 +225,32 @@ class CsParser:
 		# pp.pprint(match_details)
 
 		return match_details
+
+class DotaParser:
+
+	def __init__(self):
+		self.base_url = 'http://dailydota2.com'
+		self.api_uri = '/match-api'
+
+	def get_matches(self):
+		# get live and upcoming matches
+		req = urllib2.Request(self.base_url + self.api_uri, headers={'User-Agent': 'Magic Browser'}) 
+		res = urllib2.urlopen(req)
+		raw_json = res.read().decode('utf-8')
+		matches = json.loads(raw_json)
+		matches = matches['matches']
+		# get match_ids
+		for match in matches:
+			match['match_id'] = match['link'].split('/')[-1]
+		# sort into live and upcoming matches
+		live_matches = []
+		upcoming_matches = []
+		for match in matches:
+			if match['status'] is '1':
+				match['type'] = 'live'
+				live_matches.append(match)
+			else:
+				match['type'] = 'upcoming'
+				upcoming_matches.append(match)
+		return (live_matches, upcoming_matches)
+

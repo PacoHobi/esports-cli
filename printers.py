@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import time as TimeClass
 
 
 class AnsiColors:
@@ -28,13 +29,13 @@ class CsPrinter:
 	def __init__(self):
 		pass
 
-	def print_live_matches(self, upcoming_matches, filter=None):
+	def print_live_matches(self, live_matches, filter=None):
 		c = AnsiColors()
 		if filter:
 			filter = filter.lower()
 		header = ['ID', 'Team 1', 'Score','Team 2', 'Map']
 		rows = []
-		for match in upcoming_matches:
+		for match in live_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
 			match_id = match['match_id']
@@ -49,7 +50,7 @@ class CsPrinter:
 			row = [match_id, team1, score, team2, map]
 			rows.append(row)
 		alignments = ['<', '>', '^', '<', '<']
-		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
 
 	def print_upcoming_matches(self, upcoming_matches, filter=None):
 		c = AnsiColors()
@@ -70,7 +71,7 @@ class CsPrinter:
 			row = [match_id, team1, bo, team2, time]
 			rows.append(row)
 		alignments = ['<', '>', '^', '<', '^']
-		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
 
 	def print_recent_matches(self, recent_matches, filter=None):
 		c = AnsiColors()
@@ -111,7 +112,7 @@ class CsPrinter:
 		# alignments
 		alignments = ['<', '>', '^', '<', '<']
 
-		self.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments, colors=colors, decode='iso-8859-1')
 
 	def print_match_details(self, match_details):
 		c = AnsiColors()
@@ -148,7 +149,7 @@ class CsPrinter:
 		date_time = "%s @ %s %s" %(match_details['date'], match_details['time'], live)
 		# event
 		event = match_details['event']
-		self.print_box([header, date_time, event], alignment='^')
+		Utils.print_box([header, date_time, event], alignment='^')
 
 		# map general scores
 		header = ['Map', 'Score', '1 Half', '2 Half']
@@ -162,7 +163,7 @@ class CsPrinter:
 			row = [map_name, score, half1, half2]
 			rows.append(row)
 		alignments = ['<', '^', '^', '^']
-		self.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
+		Utils.print_table(header, rows, alignments=alignments, decode='iso-8859-1')
 
 		# maps stats
 		for map in match_details['maps']:
@@ -201,7 +202,7 @@ class CsPrinter:
 				rating = stats['rating']
 				row = [name, k, d, diff, hs, rating]
 				rows.append(row)
-			self.print_table(header, rows, decode='iso-8859-1')
+			Utils.print_table(header, rows, decode='iso-8859-1')
 			header = [team2, 'K', 'D', '+/-', 'HS %', 'Rating']
 			rows = []
 			for i in range(len(map_stats)/2, len(map_stats)):
@@ -214,10 +215,63 @@ class CsPrinter:
 				rating = stats['rating']
 				row = [name, k, d, diff, hs, rating]
 				rows.append(row)
-			self.print_table(header, rows, decode='iso-8859-1')
+			Utils.print_table(header, rows, decode='iso-8859-1')
 
 
-	def print_box(self, text, alignment='<', decode=None):
+class DotaPrinter:
+	def __init__(self):
+		pass
+
+	def print_live_matches(self, live_matches, filter=None):
+		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
+		header = ['ID', 'Team 1', 'Score','Team 2', 'Bo']
+		rows = []
+		for match in live_matches:
+			if filter and filter not in match['team1']['team_name'].lower() and \
+						  filter not in match['team2']['team_name'].lower() and \
+						  filter not in match['team2']['team_tag'].lower() and \
+						  filter not in match['team2']['team_tag'].lower():
+				continue
+			match_id = match['match_id']
+			team1 = match['team1']['team_tag']
+			team2 = match['team2']['team_tag']
+			score = "{:>2} - {:<2}".format(match['team1']['score'], match['team2']['score'])
+			bo = "bo" + match['series_type']
+			row = [match_id, team1, score, team2, bo]
+			rows.append(row)
+		alignments = ['<', '>', '^', '<', '<']
+		Utils.print_table(header, rows, alignments=alignments)
+
+	def print_upcoming_matches(self, upcoming_matches, filter=None):
+		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
+		header = ['ID', 'Team 1', 'Bo', 'Team 2', 'Time']
+		rows = []
+		for match in upcoming_matches:
+			if filter and filter not in match['team1']['team_name'].lower() and \
+						  filter not in match['team2']['team_name'].lower() and \
+						  filter not in match['team2']['team_tag'].lower() and \
+						  filter not in match['team2']['team_tag'].lower():
+				continue
+			match_id = match['match_id']
+			team1 = match['team1']['team_tag']
+			team2 = match['team2']['team_tag']
+			bo = "bo%d" % match['series_type']
+			time = TimeClass.localtime(float(match['starttime_unix']))
+			time = TimeClass.strftime('%x %H:%M', time)
+			row = [match_id, team1, bo, team2, time]
+			rows.append(row)
+		alignments = ['<', '>', '^', '<', '<']
+		Utils.print_table(header, rows, alignments=alignments)
+
+
+class Utils:
+
+	@staticmethod
+	def print_box(text, alignment='<', decode=None):
 		lines = text
 		if type(text) is str:
 			lines = lines.split('\n')
@@ -241,7 +295,8 @@ class CsPrinter:
 			print(line)
 		print(bottom_border)
 
-	def print_table(self, header, rows, alignments=None, align_titles=True, colors=None, compact=True, decode=None):
+	@staticmethod
+	def print_table(header, rows, alignments=None, align_titles=True, colors=None, compact=True, decode=None):
 		c = AnsiColors()
 		# calculate columns width
 		header_widths = []
