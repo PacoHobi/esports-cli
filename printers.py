@@ -114,7 +114,7 @@ class CsPrinter:
 
 		Utils.print_table(header, rows, alignments=alignments, colors=colors)
 
-	def print_match_details(self, match_details):
+	def print_match_details(self, match, match_details):
 		c = AnsiColors()
 
 		# heading
@@ -143,7 +143,7 @@ class CsPrinter:
 		header = "%s vs %s" % (team1, team2)
 		# live
 		live = ''
-		if match_details['live']:
+		if match['type'] == 'live':
 			live = '%s(live)%s' %(c.red, c.endc)
 		# date
 		date_time = "%s @ %s %s" %(match_details['date'], match_details['time'], live)

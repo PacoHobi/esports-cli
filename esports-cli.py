@@ -82,8 +82,9 @@ def handle_csgo(args):
 				print_error("Match %s not found" %(args.match))
 
 		# parse match details an print them out
+		match = [x for x in all_matches if x['match_id'] == args.match][0]
 		match_details = parser.get_match_details(args.match)
-		printer.print_match_details(match_details)
+		printer.print_match_details(match, match_details)
 		return
 
 	if args.show in ['all', 'live']:
