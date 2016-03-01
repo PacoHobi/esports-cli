@@ -234,6 +234,7 @@ class DotaParser:
 	def __init__(self):
 		self.base_url = 'http://dailydota2.com'
 		self.api_uri = '/match-api'
+		self.matches_uri = '/livescore'
 
 	def get_matches(self):
 		# get live and upcoming matches
@@ -255,7 +256,43 @@ class DotaParser:
 			else:
 				match['type'] = 'upcoming'
 				upcoming_matches.append(match)
-		return (live_matches, upcoming_matches)
+
+		# get recent matches
+		req = urllib2.Request(self.base_url + self.matches_uri, headers={'User-Agent': 'Magic Browser'})
+		res = urllib2.urlopen(req)
+		full_html = res.read().decode('utf-8')
+		full_html = decode_html_entities(full_html)
+
+		html = re.search(r'<div[^>]+?id="past-games">[\s\S]+?<div[^>]*id="notice-bottom">', full_html)
+		html = html.group(0)
+		texts = re.split(r'<[^>]+>', html)
+		texts = [x.strip() for x in texts]
+		texts = [x for x in texts if len(x) > 0]
+		match_ids = re.findall(r'<a[^>]+ href="\/match\/(.+?)"', html)
+		# fill into recent_matches
+		recent_matches = []
+		for i in range(3, len(texts), 6):
+			fields = texts[i:i+6]
+			time = fields[0]
+			bo = fields[1][-1]
+			event = fields[2]
+			team1 = fields[3]
+			score1 = int(fields[4].split(' - ')[0])
+			score2 = int(fields[4].split(' - ')[1])
+			team2 = fields[5]
+			match = {
+				'match_id': match_ids[i/6],
+				'time': time,
+				'bo': bo,
+				'event': event,
+				'team1': team1,
+				'team2': team2,
+				'score1': score1,
+				'score2': score2
+			}
+			recent_matches.append(match)
+
+		return (live_matches, upcoming_matches, recent_matches)
 
 
 def decode_html_entities(html):

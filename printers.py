@@ -267,6 +267,46 @@ class DotaPrinter:
 		alignments = ['<', '>', '^', '<', '<']
 		Utils.print_table(header, rows, alignments=alignments)
 
+	def print_recent_matches(self, upcoming_matches, filter=None):
+		c = AnsiColors()
+		if filter:
+			filter = filter.lower()
+		header = ['ID', 'Team 1', 'Score', 'Team 2', 'Bo', 'Time']
+
+		# generate rows
+		rows = []
+		for match in upcoming_matches:
+			if filter and filter not in match['team1'] and filter not in match['team2']:
+				continue
+			match_id = match['match_id']
+			team1 = match['team1']
+			team2 = match['team2']
+			score = "{:>2} - {:<2}".format(match['score1'], match['score2'])
+			bo = "bo%s" % match['bo']
+			time = match['time']
+			row = [match_id, team1, score, team2, bo, time]
+			rows.append(row)
+
+		# generate colors
+		colors = [["" for y in range(len(header))] for x in range(len(rows))]
+		for i, row in enumerate(rows):
+			score1 = upcoming_matches[i]['score1']
+			score2 = upcoming_matches[i]['score2']
+			if score1 > score2:
+				colors[i][1] = c.green
+				colors[i][3] = c.red
+			elif score1 == score2:
+				colors[i][1] = c.yellow
+				colors[i][3] = c.yellow
+			else:
+				colors[i][1] = c.red
+				colors[i][3] = c.green
+
+		# alignments
+		alignments = ['<', '>', '^', '<', '<', '<']
+
+		Utils.print_table(header, rows, colors=colors, alignments=alignments)
+
 	def print_match_details(self, match_details):
 		c = AnsiColors()
 

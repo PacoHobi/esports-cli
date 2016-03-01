@@ -99,11 +99,12 @@ def handle_csgo(args):
 		print("\nRecent matches")
 		printer.print_recent_matches(recent_matches, filter=args.filter)
 
+
 def handle_dota(args):
 	c = AnsiColors()
 	parser = DotaParser()
 	printer = DotaPrinter()
-	(live_matches, upcoming_matches) = parser.get_matches()
+	(live_matches, upcoming_matches, recent_matches) = parser.get_matches()
 	all_matches = live_matches[:]
 	all_matches.extend(upcoming_matches)
 	# all_matches.extend(recent_matches)
@@ -149,6 +150,9 @@ def handle_dota(args):
 		print("\nUpcoming matches")
 		printer.print_upcoming_matches(upcoming_matches, filter=args.filter)
 
+	if args.show in ['all', 'recent']:
+		print("\nRecent matches")
+		printer.print_recent_matches(recent_matches, filter=args.filter)
 
 
 def print_info(msg):
