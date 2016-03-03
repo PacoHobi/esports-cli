@@ -12,7 +12,7 @@ class CsParser:
 		# get live and upcoming matches
 		req = urllib2.Request(self.base_url + '/matches/', headers={'User-Agent': "Magic Browser"}) 
 		res = urllib2.urlopen(req)
-		html = res.read().decode('utf-8')
+		html = res.read().decode('latin1')
 		html = decode_html_entities(html)
 		
 		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
@@ -28,7 +28,7 @@ class CsParser:
 		# get recent matches
 		req = urllib2.Request(self.base_url + '/results/', headers={'User-Agent': "Magic Browser"}) 
 		res = urllib2.urlopen(req)
-		html = res.read().decode('utf-8')
+		html = res.read().decode('latin1')
 		
 		matches_html = re.findall(r'<div class="matchListRow"[^>]*>[\s\S]+?<div style="clear:both;">', html)
 		matches_ids.extend(re.findall(r'<a .*?href="(\/match\/(\d+)[^"]+)', " ".join(matches_html)))
