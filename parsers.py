@@ -286,11 +286,12 @@ class DotaParser:
 			team2 = fields[5]
 			match = {
 				'match_id': match_ids[i/6],
-				'time': time,
+				'type': 'recent',
+				'starttime_unix': time,
 				'bo': bo,
-				'event': event,
-				'team1': team1,
-				'team2': team2,
+				'league_name': event,
+				'team1': {'team_name':team1, 'country_code':'', 'winner':score1>score2},
+				'team2': {'team_name':team2, 'country_code':'', 'winner':score2>score1},
 				'score1': score1,
 				'score2': score2
 			}

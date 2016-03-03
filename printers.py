@@ -281,9 +281,9 @@ class DotaPrinter:
 			if filter and filter not in match['team1'] and filter not in match['team2']:
 				continue
 			match_id = match['match_id']
-			event = match['event']
-			team1 = match['team1']
-			team2 = match['team2']
+			event = match['league_name']
+			team1 = match['team1']['team_name']
+			team2 = match['team2']['team_name']
 			score = "{} - {}".format(match['score1'], match['score2'])
 			bo = "bo%s" % match['bo']
 			row = [match_id, team1, score, team2, event]
@@ -341,7 +341,10 @@ class DotaPrinter:
 		date_time = TimeClass.localtime(float(match_details['starttime_unix']))
 		date_time = TimeClass.strftime('%x @ %X', date_time)
 		# event
-		event = match_details['league']['name']
+		if match_details['type'] == 'recent':
+			event = match_details['league_name']
+		else:
+			event = match_details['league']['name']
 		Utils.print_box([header, date_time, event], alignment='^')
 
 
