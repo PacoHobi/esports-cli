@@ -112,9 +112,9 @@ def handle_dota(args):
 	# match details
 	if args.match:
 		# get all match_id->match_url pairs
-		match_ids = [x['link'].split('/')[-1] for x in live_matches]
-		match_ids.extend([x['link'].split('/')[-1] for x in upcoming_matches])
-		# match_ids.extend([x['link'].split('/')[-1] for x in recent_matches])
+		match_ids = [x['match_id'] for x in live_matches]
+		match_ids.extend([x['match_id'] for x in upcoming_matches])
+		match_ids.extend([x['match_id'] for x in recent_matches])
 
 		# check if the given ID is known
 		if args.match not in match_ids:
