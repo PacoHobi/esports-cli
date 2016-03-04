@@ -239,7 +239,7 @@ class DotaPrinter:
 			team1 = match['team1']['team_tag']
 			team2 = match['team2']['team_tag']
 			score = "{:>2} - {:<2}".format(match['team1']['score'], match['team2']['score'])
-			bo = "bo" + match['series_type']
+			bo = "bo" + str(match['series_type'])
 			row = [match_id, team1, score, team2, bo, event]
 			rows.append(row)
 		alignments = ['<', '>', '^', '<', '<', '<']

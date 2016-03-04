@@ -251,7 +251,7 @@ class DotaParser:
 		live_matches = []
 		upcoming_matches = []
 		for match in matches:
-			if match['status'] is '1':
+			if match['status'] == '1':
 				match['type'] = 'live'
 				live_matches.append(match)
 			else:
