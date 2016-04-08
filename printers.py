@@ -38,7 +38,7 @@ class CsPrinter:
 		for match in live_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
-			match_id = match['match_id']
+			match_id = match['match_id'][-3:]
 			team1 = match['team1']
 			team2 = match['team2']
 			score = "{:>2} - {:<2}".format(match['score1'], match['score2'])
@@ -61,7 +61,7 @@ class CsPrinter:
 		for match in upcoming_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
-			match_id = match['match_id']
+			match_id = match['match_id'][-3:]
 			team1 = match['team1']
 			team2 = match['team2']
 			bo = match['bo']
@@ -84,7 +84,7 @@ class CsPrinter:
 		for match in recent_matches:
 			if filter and filter not in match['team1'].lower() and filter not in match['team2'].lower():
 				continue
-			match_id = match['match_id']
+			match_id = match['match_id'][-3:]
 			team1 = match['team1']
 			team2 = match['team2']
 			score = "{:>2} - {}".format(match['score1'], match['score2'])
@@ -184,7 +184,7 @@ class CsPrinter:
 			else:
 				color1 = c.yellow
 				color2 = c.yellow
-			print("\n%s %s%s%s %s - %s %s%s%s" %(
+			print("\n%s | %s%s%s %s - %s %s%s%s" %(
 				map_name,
 				color1, team1, c.endc, score1,
 				score2, color2, team2, c.endc	

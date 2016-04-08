@@ -42,9 +42,13 @@ class CsParser:
 		live_matches = []
 		upcoming_matches = []
 		recent_matches = []
+
 		for i,fields in enumerate(matches):
-			match_url = matches_ids[i][0]
-			match_id = matches_ids[i][1]
+			try:
+				match_url = matches_ids[i][0]
+				match_id = matches_ids[i][1]
+			except:
+				continue
 			if len(fields) == 6:
 				match = {
 					'match_id': match_id,
